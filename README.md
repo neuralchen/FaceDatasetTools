@@ -33,3 +33,10 @@ Unzip ```insightface_func.zip``` to root path of this project (i.e., "./")
 or 
 
 ```python face_cluster_kmeansplus.py```
+
+### Detect face mask with FaRL:
+
+Download ```FaRL.rar``` from:
+[baidu cloud (password: we0q)](https://pan.baidu.com/s/1umvmpGqe0e0tZPhc3msqwQ?pwd=we0q) 
+
+Unzip ```FaRL.rar``` to root path of this project (i.e., "./")
