@@ -13,7 +13,7 @@
 
 # Download
 Download ```arcface_checkpoint.tar``` from:
-[baidu cloud](https://pan.baidu.com/s/1QjPZNojXI51tGbZvXH_Waw?pwd=au23)
+[baidu cloud](https://pan.baidu.com/s/1ytCegRrORVoEyQyznMZREg?pwd=sjtu)
 
 Put ```arcface_checkpoint.tar``` to ```/arcface_ckpt```
 
