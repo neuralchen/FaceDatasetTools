@@ -40,3 +40,5 @@ Download ```FaRL.rar``` from:
 [baidu cloud (password: we0q)](https://pan.baidu.com/s/1umvmpGqe0e0tZPhc3msqwQ?pwd=we0q) 
 
 Unzip ```FaRL.rar``` to root path of this project (i.e., "./")
+
+Refer to ```debug_FaRL.py``` to detect face mask.
