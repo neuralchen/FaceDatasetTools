@@ -24,17 +24,17 @@ Unzip ```insightface_func.zip``` to root path of this project (i.e., "./")
 
 # Usage
 
-### To crop faces from a video or a directory:
+## To crop faces from a video or a directory:
 ```python face_crop.py```
 
-### To roughly classify different faces:
+## To roughly classify different faces:
 ```python face_cluster.py```
 
 or 
 
 ```python face_cluster_kmeansplus.py```
 
-### Detect face mask with FaRL:
+## Detect face mask with FaRL:
 
 Download ```FaRL.rar``` from:
 [baidu cloud (password: we0q)](https://pan.baidu.com/s/1umvmpGqe0e0tZPhc3msqwQ?pwd=we0q) 
