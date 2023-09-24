@@ -11,6 +11,7 @@
 - tqdm
 - pillow
 - numpy
+- kmeans_pytorch
 - pip install opencv-python
 - pip install scikit-learn
 - torchvision
