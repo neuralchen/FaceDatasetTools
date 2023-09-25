@@ -91,7 +91,7 @@
     <td><center><img src="./badcase/006430_3.png"
                      alt="motion blurry"
                      height="300"/></center></td>
-    <td><center><img src="./badcase/006620_1.png"
+    <td><center><img src="./badcase/024190_3.png"
                      alt="out-of-focus"
                      height="300"/></center></td>
     </tr>
