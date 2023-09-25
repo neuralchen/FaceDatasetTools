@@ -16,6 +16,15 @@
 - 第二步，利用本项目中提供的[face_crop_video.py](../face_crop_video.py)来实现从电影数据中粗截取人脸，其使用说明参考[README.md](../README.md)，同学们需要首先参照```Dependencies```安装环境依赖。注意每一部电影需要为其建立一个独立的文件夹以免后续结果覆盖。通过这个脚本得到的数据经常有数据冗余的问题请调整GUI界面中的```Frame Interval```，它用来抽样视频中的帧，取的数值也即多少帧抽样一次。人脸也有可能比较模糊，同学们可以通过调整```Blurry Thredhold```的数值来调整软件筛选人脸清晰度的数值，这个数值越大人脸需要越清晰，也意味着软件会抛弃掉更多的人脸，建议这个数值设置在20~30。人脸分辨率统一规定为```1024*1024```，文件格式统一为```.png```，对齐方式统一为```FFHQ```；
 - 第三步，利用本项目中提供的[face_cluster.py](../face_cluster.py)来实现对第二步得到的人脸按其身份进行粗分类，我们最终目标的数据是以人物身份作为文件夹归档，不同的人必须位于不同的文件夹中。这一步需要调整GUI中的聚类中心的数目，需要我们事先大概估计目标文件夹中的人物数量，然后聚类中心取为预估数量的两倍，这样以来GUI可以把不能良好识别的人脸从正常人脸中剥离，注意这一部分软件只能起到粗分类的作用，通过加大聚类中心的数目可以缓解软件将不同的人物分类到同一个文件夹的问题。得到粗分类结果后，我们对这些数据进行手工清洗，去掉人脸朝向角度过大的数据、去掉过于模糊的数据、去掉五官不全的数据、去掉没有被良好对齐的数据。
 
+## 标准人脸样例：
+![Alt text](1695669816913.png)
+
+如上图所示，左右眼中心，鼻尖，两嘴角位于图像中相近的区域即可认定为标准人脸，并且注意以这五点区域向外延拓的区域也应与上图类似。
+- ***人脸对齐失败***：另外可接受的图片可以以两眼关键点的连线为参考，如若连线显著性倾斜，例如：水平轴与两眼中心点连线超过+/-30度以上即可认定为显著性倾斜，即可抛弃。
+- ***人脸放缩失败***：人脸过小，例如：人脸只占图像40%面积以下即可认定为过小，即可抛弃。
+- ***大幅度侧脸***：完全侧脸，人脸朝向与镜头呈90度，只要不违背上述两条即可留下。完全背过
+
+
 ## 正常图片样例：
 <table frame=void>
 	<tr>		  
@@ -36,7 +45,7 @@
     <td><center><img src="./normalcase/048820_0.png"
                      alt="out-of-focus"
                      height="300"/></center></td>
-    <td><center><img src="./normalcase/011120_0.png"
+    <td><center><img src="./normalcase/007850_0.png"
                      alt="out-of-focus"
                      height="300"/></center></td>
     </tr>
@@ -63,7 +72,23 @@
     <td><center><img src="./badcase/054680_0.png"		
                      alt="out-of-focus"
                      height="300"/></center></td>
-    <td><center><img src="./badcase/017540_0.png"
+    <td><center><img src="./badcase/010020_0.png"
+                     alt="motion blurry"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/016290_0.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    </tr>
+</table>
+
+### 五官不全，无法辨认主体身份：
+
+<table frame=void>
+	<tr>		  
+    <td><center><img src="./badcase/006430_2.png"		
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/006430_3.png"
                      alt="motion blurry"
                      height="300"/></center></td>
     <td><center><img src="./badcase/006620_1.png"
