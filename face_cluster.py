@@ -20,6 +20,7 @@ import cv2
 import glob
 import shutil
 import numpy as np
+from   tqdm import tqdm
 from kmeans_pytorch import kmeans
 
 import os
@@ -234,7 +235,8 @@ class Application(tk.Frame):
         for i_dir in input_dir:
             if not i_dir:
                 continue
-            for item in glob.iglob(os.path.join(i_dir,"*")):
+            print("Processing dir: %s"%i_dir)
+            for item in tqdm(glob.iglob(os.path.join(i_dir,"*"))):
                 id_img  = cv2.imdecode(np.fromfile(item, dtype=np.uint8), cv2.IMREAD_COLOR)
                 mark.append(item)
                 id_img      = self.transformer_Arcface(id_img)
@@ -251,10 +253,11 @@ class Application(tk.Frame):
         print("%d images are found!"%index)
 
         # kmeans
+        print("Start to cluster faces.......")
         cluster_ids_x, cluster_centers = kmeans(
             X=imgs_tensor, num_clusters=num_clusters, distance='cosine', device=torch.device('cuda:0'), tol=0.000001
         )
-
+        print("Finished!")
         center_num = cluster_centers.shape[0]
 
         target_paths = []
