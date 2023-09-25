@@ -28,6 +28,14 @@
     <td><center><img src="./normalcase/057240_0.png"
                      alt="out-of-focus"
                      height="300"/></center></td>
+    </tr>
+    <tr>
+    <td><center><img src="./normalcase/011120_0.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./normalcase/048820_0.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
     <td><center><img src="./normalcase/011120_0.png"
                      alt="out-of-focus"
                      height="300"/></center></td>
@@ -42,6 +50,17 @@
 <table frame=void>
 	<tr>		  
     <td><center><img src="./badcase/000840_1.png"		
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/017540_0.png"
+                     alt="motion blurry"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/006620_1.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    </tr>
+    <tr>		  
+    <td><center><img src="./badcase/054680_0.png"		
                      alt="out-of-focus"
                      height="300"/></center></td>
     <td><center><img src="./badcase/017540_0.png"
