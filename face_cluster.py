@@ -26,16 +26,14 @@ import os
 import cv2
 import sys
 import glob
-import tkinter
-from tkinter.filedialog import askdirectory
+
 
 import threading
 import tkinter as tk
-import tkinter.ttk as ttk
+from tkinter.filedialog import askdirectory
 
 import numpy as np
 
-from insightface_func.face_detect_crop_multi import Face_detect_crop
 
 class TextRedirector(object):
     def __init__(self, widget, tag="stdout"):
@@ -84,7 +82,7 @@ class Application(tk.Frame):
         list_frame.columnconfigure(2, weight=1)
         list_frame.columnconfigure(3, weight=1)
 
-        self.img_path = tkinter.StringVar()
+        self.img_path = tk.StringVar()
 
         tk.Label(list_frame, text="Image Path:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
@@ -106,7 +104,7 @@ class Application(tk.Frame):
         list_frame1.columnconfigure(1, weight=1)
         list_frame1.columnconfigure(2, weight=1)
 
-        self.save_path = tkinter.StringVar()
+        self.save_path = tk.StringVar()
 
         tk.Label(list_frame1, text="Target Path:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
@@ -130,7 +128,7 @@ class Application(tk.Frame):
         tk.Label(test_frame, text="Center number:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
 
-        self.thredhold = tkinter.StringVar()
+        self.thredhold = tk.StringVar()
         tk.Entry(test_frame, textvariable= self.thredhold, font=font_list)\
                     .grid(row=0,column=1,sticky=tk.EW)
         self.thredhold.set("20")
@@ -159,7 +157,7 @@ class Application(tk.Frame):
         self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def init_algorithm(self):
-        arcface_ckpt= "./arcface_ckpt/arcface_checkpoint2.tar"
+        arcface_ckpt= "./arcface_ckpt/arcface_checkpoint.tar"
         self.transformer_Arcface = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
