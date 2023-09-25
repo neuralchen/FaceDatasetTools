@@ -276,6 +276,8 @@ class Application(tk.Frame):
             print("source face: %s ---> target path %s"%(mark[i],tg_temp))
             shutil.copyfile(mark[i],tg_temp)
 
+        print("Process finished!")
+
     def on_closing(self):
 
         # self.__save_config__()
