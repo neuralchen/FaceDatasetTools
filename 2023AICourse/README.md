@@ -52,6 +52,17 @@
                      alt="out-of-focus"
                      height="300"/></center></td>
     </tr>
+    <tr>
+    <td><center><img src="./normalcase/335720_2.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./normalcase/073790_0.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./normalcase/046360_0.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    </tr>
     
 </table>
 
@@ -98,9 +109,34 @@
                      alt="out-of-focus"
                      height="300"/></center></td>
     </tr>
+    <tr>		  
+    <td><center><img src="./badcase/280790_0.png"		
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/249510_0.png"
+                     alt="motion blurry"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/226260_0.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    </tr>
 </table>
 
+### 对齐失败：
 
+<table frame=void>
+	<tr>		  
+    <td><center><img src="./badcase/307760_0.png"		
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/308010_0.png"
+                     alt="motion blurry"
+                     height="300"/></center></td>
+    <td><center><img src="./badcase/310720_1.png"
+                     alt="out-of-focus"
+                     height="300"/></center></td>
+    </tr>
+</table>
 
 其工作流可以总结如下图：
 
