@@ -18,6 +18,9 @@
 
 - ***数据上传***：数据统一保存在***交大云盘***中，请将数据上传至与自己组别一致的文件夹中，请将文件压缩为```.zip```上传，请注意上传的为***清洗后的数据***，链接：[交大云盘](https://jbox.sjtu.edu.cn/l/31pA46)
 
+[<img src="15-13-08-190_512.gif"		
+                     alt="out-of-focus"
+                     height="300"/>](https://jbox.sjtu.edu.cn/l/31pA46)
 
 ## 标准人脸样例：
 ![face_alignment](face_alignment.png)
