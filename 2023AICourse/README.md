@@ -152,3 +152,4 @@
 ## 相关链接：
 - https://github.com/neuralchen/SimSwap
 - https://github.com/neuralchen/SimSwapPlus
+- (***AIGC入门教程，强烈建议***) https://github.com/neuralchen/NeuralRenderingTutorial
