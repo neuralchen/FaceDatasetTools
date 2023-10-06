@@ -3,10 +3,9 @@
 ***Currently the GUI only supports Windows operating systems***
 
 # Dependencies*(required)
+- pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
 - pip install insightface==0.2.0
 - onnx
-- onnxruntime
-- pytorch
 - onnxruntime==1.15
 - tqdm
 - pillow
@@ -15,7 +14,7 @@
 - pip install opencv-python
 - pip install scikit-learn
 - torchvision
-- pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+
 
 
 # Download*(required)
