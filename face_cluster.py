@@ -31,6 +31,7 @@ import glob
 
 import threading
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter.filedialog import askdirectory
 
 import numpy as np
@@ -124,6 +125,8 @@ class Application(tk.Frame):
         test_frame.pack(fill="both", padx=5,pady=5)
         test_frame.columnconfigure(0, weight=1)
         test_frame.columnconfigure(1, weight=1)
+        test_frame.columnconfigure(2, weight=1)
+        test_frame.columnconfigure(3, weight=1)
 
 
         tk.Label(test_frame, text="Center number:",font=font_list,justify="left")\
@@ -132,7 +135,16 @@ class Application(tk.Frame):
         self.thredhold = tk.StringVar()
         tk.Entry(test_frame, textvariable= self.thredhold, font=font_list)\
                     .grid(row=0,column=1,sticky=tk.EW)
-        self.thredhold.set("20")
+        self.thredhold.set("30")
+
+        tk.Label(test_frame, text="Mode:",font=font_list,justify="left")\
+                    .grid(row=0,column=2,sticky=tk.EW)
+
+        self.align_var = tk.StringVar()
+        self.align_com = ttk.Combobox(test_frame, textvariable=self.align_var)
+        self.align_com.grid(row=0,column=3,sticky=tk.EW)
+        self.align_com["value"] = ["copy","cut"]
+        self.align_com.current(1)
         
         #################################################################################################
         test_frame1    = tk.Frame(self.master)
@@ -210,6 +222,7 @@ class Application(tk.Frame):
         tg_path     = self.save_path.get()
         num_clusters= self.thredhold.get()
         num_clusters= int(num_clusters)
+        mode        = self.align_com.get()
 
         if not path:
             print("Please select source path!")
@@ -219,7 +232,10 @@ class Application(tk.Frame):
             print("Please select target path!")
             return
         
-        
+        if mode == "copy":
+            file_method = shutil.copyfile
+        elif mode == "cut":
+            file_method = shutil.move
 
         print("target path: ",tg_path)
         if not os.path.exists(tg_path):
@@ -274,7 +290,7 @@ class Application(tk.Frame):
             attr_basename = os.path.basename(mark[i])
             tg_temp = os.path.join(target_paths[tg_num], attr_basename)
             print("source face: %s ---> target path %s"%(mark[i],tg_temp))
-            shutil.copyfile(mark[i],tg_temp)
+            file_method(mark[i],tg_temp)
 
         print("Process finished!")
 

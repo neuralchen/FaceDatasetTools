@@ -2,7 +2,8 @@
  
 ***Currently the GUI only supports Windows operating systems***
 
-# Dependencies
+# Dependencies*(required)
+- pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
 - pip install insightface==0.2.0
 - onnx
 - onnxruntime==1.15
@@ -12,10 +13,11 @@
 - kmeans_pytorch
 - pip install opencv-python
 - pip install scikit-learn
-- pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+- torchvision
 
 
-# Download
+
+# Download*(required)
 Download ```arcface_checkpoint.tar``` from: [baidu cloud](https://pan.baidu.com/s/1ytCegRrORVoEyQyznMZREg?pwd=sjtu)
 
 Put ```arcface_checkpoint.tar``` to ```/arcface_ckpt```
