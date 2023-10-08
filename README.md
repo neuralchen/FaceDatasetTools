@@ -5,8 +5,6 @@
 # Dependencies
 - pip install insightface==0.2.0
 - onnx
-- onnxruntime
-- pytorch
 - onnxruntime==1.15
 - tqdm
 - pillow
@@ -14,7 +12,6 @@
 - kmeans_pytorch
 - pip install opencv-python
 - pip install scikit-learn
-- torchvision
 - pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
 
 
@@ -33,6 +30,9 @@ Unzip ```insightface_func.zip``` to ***root path*** of this project (i.e., "./")
 ## To crop faces from a video:
 ```python face_crop_video.py```
 
+or
+
+double click ```face_crop_video.bat```
 
 ### Parameters in GUI:
 - Video Path: The path to the video file. Users need to create a dedicated folder for the target video to prevent the results from being overwritten.
@@ -45,9 +45,10 @@ Unzip ```insightface_func.zip``` to ***root path*** of this project (i.e., "./")
 ## To roughly classify different faces:
 ```python face_cluster.py```
 
-or 
+or
 
-```python face_cluster_kmeansplus.py```
+double click ```face_cluster.bat```
+
 
 ## Detect face mask with FaRL:
 
