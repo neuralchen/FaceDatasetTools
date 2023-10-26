@@ -120,9 +120,9 @@ class Face_detect_crop:
                 continue
             M, _ = face_align.estimate_norm(kps, transformer_size, mode = self.mode) 
             align_img   = cv2.warpAffine(img, M, (transformer_size, transformer_size), flags=cv2.INTER_LANCZOS4, borderValue=0.0)
-            align_img   = cv2.resize(align_img,(crop_size, crop_size),interpolation=cv2.INTER_LANCZOS4)
-            # align_img   = Image.fromarray(cv2.cvtColor(align_img,cv2.COLOR_BGR2RGB))
-            # align_img   = align_img.resize((crop_size, crop_size), PIL.Image.LANCZOS)
+            # align_img   = cv2.resize(align_img,(crop_size, crop_size),interpolation=cv2.INTER_LANCZOS4)
+            align_img   = Image.fromarray(cv2.cvtColor(align_img,cv2.COLOR_BGR2RGB))
+            align_img   = align_img.resize((crop_size, crop_size), PIL.Image.LANCZOS)
             # align_img   = cv2.cvtColor(numpy.asarray(align_img),cv2.COLOR_RGB2BGR)
 
             align_img_list.append(align_img)
