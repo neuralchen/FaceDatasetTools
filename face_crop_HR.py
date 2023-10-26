@@ -22,6 +22,7 @@ import threading
 import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
+from PIL import Image
 
 from insightface_func.face_detect_crop_multi_highresolution import Face_detect_crop
 
@@ -311,8 +312,9 @@ class Application(tk.Frame):
                         # print("save path: ",f_path)
                         # face_i = cv2.putText(face_i, '%.1f'%imageVar,(50, 50), font, 0.8, (15, 9, 255), 2)
                         # cv2.imwrite(f_path,face_i)
-                        cv2.imencode('.png',face_i)[1].tofile(f_path)
-                        # face_i.save(f_path, quality=100, compress_level=0, dpi=(300, 300))
+                        # cv2.imencode('.png',face_i)[1].tofile(f_path)
+                        # face_i   = Image.fromarray(cv2.cvtColor(face_i,cv2.COLOR_BGR2RGB))
+                        face_i.save(f_path, quality=100, compress_level=0, dpi=(300, 300))
                         sub_index += 1
                     index += 1
             else:
