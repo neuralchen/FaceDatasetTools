@@ -185,7 +185,7 @@ class Application(tk.Frame):
 
         self.name_mode = ttk.Combobox(name_frame, textvariable=self.name_mode_var)
         self.name_mode.grid(row=0,column=1,sticky=tk.EW)
-        self.name_mode["value"] = ["True","False"]
+        self.name_mode["value"] = ["False","True"]
         self.name_mode.current(0)
 
 
