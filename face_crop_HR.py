@@ -15,6 +15,7 @@ import os
 import cv2
 import sys
 import glob
+import datetime
 import tkinter
 from tkinter.filedialog import askdirectory
 
@@ -45,6 +46,8 @@ class TextRedirector(object):
 # Main Class
 #############################################################
 
+LOG_DIR = "./logs"
+TimeStrFormat  = '%Y%m%d%H%M%S'
 class Application(tk.Frame):
 
 
@@ -269,6 +272,19 @@ class Application(tk.Frame):
         ffhq_landmark_top = list(ffhq_landmark - blur_win)
         ffhq_landmark_bottome = list(ffhq_landmark + blur_win)
 
+        os.makedirs(LOG_DIR,exist_ok=True)
+        timeStr     = datetime.datetime.strftime(datetime.datetime.now(), TimeStrFormat)
+        log_name    = "log_%s.log"%timeStr
+        log_name    = os.path.join(LOG_DIR, log_name)
+        with open(log_name,'a+') as logf:
+            logf.writelines("Source path: %s --> Target path: %s \n"%(path, tg_path))
+            logf.writelines("Image Crop Size: %d \n"%(crop_size))
+            logf.writelines("Image Crop Mode: %s \n"%(mode))
+            logf.writelines("Image Blurry Thredhold: %s \n"%(blur_t))
+            logf.writelines("Image Affinement Transformer Size: %d \n"%(affine_size))
+            logf.writelines("Window Size to Caculate Blerry Degree: %d \n\n"%(blur_win))
+
+
         if not tg_path:
             basepath    = os.path.splitext(os.path.basename(path))[0]
             tg_path     = os.path.join("H:/face_data/VGGFace2_HQ",basepath)
@@ -288,7 +304,13 @@ class Application(tk.Frame):
             imgs_list = []
             if os.path.isdir(path):
                 print("Input a dir....")
-                for item in glob.iglob(os.path.join(path,"**"),recursive=True):
+                for item in glob.iglob(os.path.join(path,"*.jpg"),recursive=True):
+                    imgs_list.append(item)
+                for item in glob.iglob(os.path.join(path,"*.JPG"),recursive=True):
+                    imgs_list.append(item)
+                for item in glob.iglob(os.path.join(path,"*.PNG"),recursive=True):
+                    imgs_list.append(item)
+                for item in glob.iglob(os.path.join(path,"*.png"),recursive=True):
                     imgs_list.append(item)
                 index = 0
                 for img in imgs_list:
@@ -301,30 +323,41 @@ class Application(tk.Frame):
                         print("Illegal file!")
                         continue
                     attr_img_align_crop = self.detect.get(attr_img_ori,transformer_size=affine_size)
-                    if attr_img_align_crop is None:
-                        print("Detect no face!")
-                        continue
-                    sub_index = 0
-                    attr_img_align_crop = attr_img_align_crop[0]
-                    for face_i in attr_img_align_crop:
-                        imageVar = 0
-                        for i_kps in range(5):
-                            win = face_i[ffhq_landmark_top[i_kps][0]:ffhq_landmark_bottome[i_kps][0],
-                                         ffhq_landmark_top[i_kps][1]:ffhq_landmark_bottome[i_kps][1],:]
-                            imageVar += cv2.Laplacian(win, cv2.CV_64F).var()
-                        imageVar /= 5
-                        print(imageVar)
-                        # if imageVar < blur_t:
-                        #     print("Over blurry image!")
-                        #     continue
-                        if name_mode=="1":
-                            f_path =os.path.join(tg_path, save_name+"_%d.%s"%(sub_index,tg_format))
-                        else:
-                            f_path =os.path.join(tg_path, str(index).zfill(6)+"_%d.%s"%(sub_index,tg_format))
-                        # face_i   = Image.fromarray(cv2.cvtColor(face_i,cv2.COLOR_BGR2RGB))
-                        # face_i.save(f_path, quality=100, compress_level=0, dpi=(dpi, dpi))
-                        cv2.imencode('.png',face_i)[1].tofile(f_path)
-                        sub_index += 1
+                    with open(log_name,'a+') as logf:
+                        logf.writelines("Image Name: %s:\n"%(img))
+                        if attr_img_align_crop is None:
+                            logf.writelines("Detect no face!\n\n"%(img))
+                            continue
+                        sub_index = 0
+                        attr_img_align_crop = attr_img_align_crop[0]
+                        for face_i in attr_img_align_crop:
+                            imageVar = 0
+                            str_temp = ""
+                            logf.writelines(" %d-th face "%sub_index)
+                            for i_kps in range(5):
+                                win = face_i[ffhq_landmark_top[i_kps][0]:ffhq_landmark_bottome[i_kps][0],
+                                            ffhq_landmark_top[i_kps][1]:ffhq_landmark_bottome[i_kps][1],:]
+                                temp = cv2.Laplacian(win, cv2.CV_64F).var()
+                                str_temp += " region %d: var = %.1f "%(i_kps, temp)
+                                imageVar += temp
+                            imageVar /= 5
+                            logf.writelines(str_temp+"\n")
+                            
+                            if imageVar < blur_t:
+                                # print("Var=%.1f. Over blurry image!"%imageVar)
+                                logf.writelines("Var=%.1f Over blurry image!\n"%imageVar)
+                                sub_index += 1
+                                continue
+                            logf.writelines("Average Var=%.1f\n"%(imageVar))
+                            if name_mode=="1":
+                                f_path =os.path.join(tg_path, save_name+"_%d.%s"%(sub_index,tg_format))
+                            else:
+                                f_path =os.path.join(tg_path, str(index).zfill(6)+"_%d.%s"%(sub_index,tg_format))
+                            # face_i   = Image.fromarray(cv2.cvtColor(face_i,cv2.COLOR_BGR2RGB))
+                            # face_i.save(f_path, quality=100, compress_level=0, dpi=(dpi, dpi))
+                            cv2.imencode('.png',face_i)[1].tofile(f_path)
+                            sub_index += 1
+                        logf.writelines("\n")
                     index += 1
             else:
                 print("Input an image....")
