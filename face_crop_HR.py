@@ -178,7 +178,7 @@ class Application(tk.Frame):
         name_frame.columnconfigure(3, weight=2)
         name_frame.columnconfigure(4, weight=1)
 
-        self.name_mode_var = tkinter.StringVar()
+        self.name_mode_var = tkinter.StringVar(value="0")
 
         self.name_mode = tk.Checkbutton(name_frame, text="Name Preserve", variable=self.name_mode_var, 
                         onvalue=True, offvalue=False)
@@ -191,7 +191,7 @@ class Application(tk.Frame):
         self.affine_size = ttk.Combobox(name_frame, textvariable=self.affine_size_var)
         self.affine_size.grid(row=0,column=2,sticky=tk.EW)
         self.affine_size["value"] = [1,4,8,10,16,20,24,32]
-        self.affine_size.current(3)
+        self.affine_size.current(4)
 
         tk.Label(name_frame, text="DPI:",font=font_list,justify="left")\
                     .grid(row=0,column=3,sticky=tk.EW)
@@ -258,6 +258,7 @@ class Application(tk.Frame):
         tg_path     = self.save_path.get()
         blur_t      = self.thredhold.get()
         name_mode   = self.name_mode_var.get()
+        
         affine_size = self.affine_size_var.get()
         affine_size = crop_size * int(affine_size)
         dpi         = int(self.dpi_var.get())
@@ -316,7 +317,7 @@ class Application(tk.Frame):
                         # if imageVar < blur_t:
                         #     print("Over blurry image!")
                         #     continue
-                        if name_mode:
+                        if name_mode=="1":
                             f_path =os.path.join(tg_path, save_name+"_%d.%s"%(sub_index,tg_format))
                         else:
                             f_path =os.path.join(tg_path, str(index).zfill(6)+"_%d.%s"%(sub_index,tg_format))
