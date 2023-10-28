@@ -168,7 +168,7 @@ class Application(tk.Frame):
         self.min_scale = tkinter.StringVar()
         tk.Scale(scale_frame, from_=0.1, to=2.0, length=500, orient=tk.HORIZONTAL, variable= self.min_scale,\
                     font=font_list, resolution=0.1).grid(row=0,column=1,sticky=tk.EW)
-        self.min_scale.set(1.0)
+        self.min_scale.set(0.8)
         #################################################################################################
         name_frame    = tk.Frame(self.master)
         name_frame.pack(fill="both", padx=5,pady=5)
