@@ -37,9 +37,9 @@ src5 = np.array([[54.796, 49.990], [60.771, 50.115], [76.673, 69.007],
 src = np.array([src1, src2, src3, src4, src5])
 src_map = src
 
-ffhq_src = np.array([[192.98138, 239.94708], [318.90277, 240.1936], [256.63416, 314.01935],
-                                           [201.26117, 371.41043], [313.08905, 371.15118]])
-ffhq_src = np.expand_dims(ffhq_src, axis=0)
+ffhq_template = np.array([[192.98138, 239.94708], [318.90277, 240.1936], [256.63416, 314.01935],
+                                           [201.26117, 371.41043], [313.08905, 371.15118]]) # left eye, right eye, nose, left mouth, right mouth
+ffhq_src = np.expand_dims(ffhq_template, axis=0)
 
 # arcface_src = np.array(
 #     [[38.2946, 51.6963], [73.5318, 51.5014], [56.0252, 71.7366],

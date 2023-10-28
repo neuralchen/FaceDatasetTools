@@ -14,6 +14,7 @@ import glob
 import os
 import os.path as osp
 import cv2
+import numpy as np
 from insightface.model_zoo import model_zoo
 from insightface_func.utils import face_align_ffhqandnewarc as face_align
 # from insightface.utils import ensure_available
@@ -96,7 +97,7 @@ class Face_detect_crop:
             return None
 
         align_img_list = []
-        M_list = []
+        affine_matrix_list = []
         # print("bbox:", bboxes)
         # max_face = -999
         # maxindex = -1
@@ -109,6 +110,7 @@ class Face_detect_crop:
         #         maxindex = i
         # print("max size:", max_face)
         # print("max index:", maxindex)
+        # print(kpss)
         for i in range(bboxes.shape[0]):
             kps = None
             if kpss is not None:
@@ -116,18 +118,21 @@ class Face_detect_crop:
             width = bboxes[i][2] - bboxes[i][0]
             height = bboxes[i][3] - bboxes[i][1]
             if max(width,height) < self.min_size:
-                # print("The detected face (%d,%d) is smaller than the minimum value %d"%(width,height,self.min_size))
+                print("The detected face (%d,%d) is smaller than the minimum value %d"%(width,height,self.min_size))
                 continue
             M, _ = face_align.estimate_norm(kps, transformer_size, mode = self.mode) 
             align_img   = cv2.warpAffine(img, M, (transformer_size, transformer_size), flags=cv2.INTER_LANCZOS4, borderValue=0.0)
             # align_img   = cv2.resize(align_img,(crop_size, crop_size),interpolation=cv2.INTER_LANCZOS4)
             align_img   = Image.fromarray(cv2.cvtColor(align_img,cv2.COLOR_BGR2RGB))
             align_img   = align_img.resize((crop_size, crop_size), PIL.Image.LANCZOS)
-            # align_img   = cv2.cvtColor(numpy.asarray(align_img),cv2.COLOR_RGB2BGR)
+
+
+
+            align_img   = cv2.cvtColor(np.asarray(align_img),cv2.COLOR_RGB2BGR)
 
             align_img_list.append(align_img)
-            M_list.append(M)
+            affine_matrix_list.append(M)
 
         if len(align_img_list)<1:
             return None
-        return align_img_list, M_list
+        return align_img_list, affine_matrix_list

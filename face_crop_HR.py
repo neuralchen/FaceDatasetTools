@@ -22,8 +22,9 @@ import threading
 import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
-from PIL import Image
+from   PIL import Image
 
+from insightface_func.utils.face_align_ffhqandnewarc import ffhq_template
 from insightface_func.face_detect_crop_multi_highresolution import Face_detect_crop
 
 class TextRedirector(object):
@@ -126,7 +127,6 @@ class Application(tk.Frame):
                     .grid(row=0,column=3,sticky=tk.EW)
         
         #################################################################################################
-
         test_frame    = tk.Frame(self.master)
         test_frame.pack(fill="both", padx=5,pady=5)
         test_frame.columnconfigure(0, weight=1)
@@ -162,7 +162,6 @@ class Application(tk.Frame):
         scale_frame.pack(fill="both", padx=5,pady=5)
         scale_frame.columnconfigure(0, weight=2)
         label_frame.columnconfigure(1, weight=1)
-        # label_frame.columnconfigure(2, weight=1)
 
         tk.Label(scale_frame, text="Min Size:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
@@ -174,34 +173,38 @@ class Application(tk.Frame):
         name_frame    = tk.Frame(self.master)
         name_frame.pack(fill="both", padx=5,pady=5)
         name_frame.columnconfigure(0, weight=1)
-        name_frame.columnconfigure(1, weight=1)
+        name_frame.columnconfigure(1, weight=2)
         name_frame.columnconfigure(2, weight=1)
-        name_frame.columnconfigure(3, weight=1)
-        # label_frame.columnconfigure(2, weight=1)
+        name_frame.columnconfigure(3, weight=2)
+        name_frame.columnconfigure(4, weight=1)
 
-        tk.Label(name_frame, text="Name Preserve:",font=font_list,justify="left")\
-                    .grid(row=0,column=0,sticky=tk.EW)
         self.name_mode_var = tkinter.StringVar()
 
-        self.name_mode = ttk.Combobox(name_frame, textvariable=self.name_mode_var)
-        self.name_mode.grid(row=0,column=1,sticky=tk.EW)
-        self.name_mode["value"] = ["False","True"]
-        self.name_mode.current(0)
-
+        self.name_mode = tk.Checkbutton(name_frame, text="Name Preserve", variable=self.name_mode_var, 
+                        onvalue=True, offvalue=False)
+        self.name_mode.grid(row=0,column=0,sticky=tk.EW)
 
         tk.Label(name_frame, text="Affine Size:",font=font_list,justify="left")\
-                    .grid(row=0,column=2,sticky=tk.EW)
+                    .grid(row=0,column=1,sticky=tk.EW)
         self.affine_size_var = tkinter.StringVar()
 
         self.affine_size = ttk.Combobox(name_frame, textvariable=self.affine_size_var)
-        self.affine_size.grid(row=0,column=3,sticky=tk.EW)
+        self.affine_size.grid(row=0,column=2,sticky=tk.EW)
         self.affine_size["value"] = [1,4,8,10,16,20,24,32]
-        self.affine_size.current(5)
+        self.affine_size.current(3)
+
+        tk.Label(name_frame, text="DPI:",font=font_list,justify="left")\
+                    .grid(row=0,column=3,sticky=tk.EW)
+        self.dpi_var = tkinter.StringVar()
+
+        self.dpi = ttk.Combobox(name_frame, textvariable=self.dpi_var)
+        self.dpi.grid(row=0,column=4,sticky=tk.EW)
+        self.dpi["value"] = [96, 100, 200, 300]
+        self.dpi.current(3)
         #################################################################################################
         test_frame1    = tk.Frame(self.master)
         test_frame1.pack(fill="both", padx=5,pady=5)
         test_frame1.columnconfigure(0, weight=1)
-        # test_frame1.columnconfigure(1, weight=1)
 
         test_update_button = tk.Button(test_frame1, text = "Crop",
                             font=font_list, command = self.Crop, bg='#F4A460', fg='#F5F5F5')
@@ -219,9 +222,7 @@ class Application(tk.Frame):
 
     def init_algorithm(self):
         self.detect = Face_detect_crop(name='antelope', root='./insightface_func/models')
-        
-    
-    # def __scaning_logs__(self):
+
     def Select(self):
         thread_update = threading.Thread(target=self.select_task)
         thread_update.start()
@@ -259,9 +260,15 @@ class Application(tk.Frame):
         name_mode   = self.name_mode_var.get()
         affine_size = self.affine_size_var.get()
         affine_size = crop_size * int(affine_size)
-        
+        dpi         = int(self.dpi_var.get())
+
+        ffhq_landmark= ffhq_template * crop_size / 512
+        ffhq_landmark= ffhq_landmark.astype(np.int16)
+        blur_win    = int(0.1 * crop_size)//2
+        ffhq_landmark_top = list(ffhq_landmark - blur_win)
+        ffhq_landmark_bottome = list(ffhq_landmark + blur_win)
+
         if not tg_path:
-            # tg_path     = os.path.join(input_dir[1],"seperated")
             basepath    = os.path.splitext(os.path.basename(path))[0]
             tg_path     = os.path.join("H:/face_data/VGGFace2_HQ",basepath)
         print("target path: ",tg_path)
@@ -280,16 +287,14 @@ class Application(tk.Frame):
             imgs_list = []
             if os.path.isdir(path):
                 print("Input a dir....")
-                # imgs = glob.glob(os.path.join(path,"**"))
                 for item in glob.iglob(os.path.join(path,"**"),recursive=True):
                     imgs_list.append(item)
-                # print(imgs_list)
                 index = 0
                 for img in imgs_list:
                     print(img)
                     try:
                         attr_img_ori = cv2.imdecode(np.fromfile(img, dtype=np.uint8),cv2.IMREAD_COLOR)
-                        if name_mode == "True":
+                        if name_mode:
                             save_name = os.path.splitext(os.path.basename(img))[0]
                     except:
                         print("Illegal file!")
@@ -301,20 +306,23 @@ class Application(tk.Frame):
                     sub_index = 0
                     attr_img_align_crop = attr_img_align_crop[0]
                     for face_i in attr_img_align_crop:
-                        # imageVar = cv2.Laplacian(face_i, cv2.CV_64F).var()
+                        imageVar = 0
+                        for i_kps in range(5):
+                            win = face_i[ffhq_landmark_top[i_kps][0]:ffhq_landmark_bottome[i_kps][0],
+                                         ffhq_landmark_top[i_kps][1]:ffhq_landmark_bottome[i_kps][1],:]
+                            imageVar += cv2.Laplacian(win, cv2.CV_64F).var()
+                        imageVar /= 5
+                        print(imageVar)
                         # if imageVar < blur_t:
                         #     print("Over blurry image!")
                         #     continue
-                        if name_mode == "True":
+                        if name_mode:
                             f_path =os.path.join(tg_path, save_name+"_%d.%s"%(sub_index,tg_format))
                         else:
                             f_path =os.path.join(tg_path, str(index).zfill(6)+"_%d.%s"%(sub_index,tg_format))
-                        # print("save path: ",f_path)
-                        # face_i = cv2.putText(face_i, '%.1f'%imageVar,(50, 50), font, 0.8, (15, 9, 255), 2)
-                        # cv2.imwrite(f_path,face_i)
-                        # cv2.imencode('.png',face_i)[1].tofile(f_path)
                         # face_i   = Image.fromarray(cv2.cvtColor(face_i,cv2.COLOR_BGR2RGB))
-                        face_i.save(f_path, quality=100, compress_level=0, dpi=(300, 300))
+                        # face_i.save(f_path, quality=100, compress_level=0, dpi=(dpi, dpi))
+                        cv2.imencode('.png',face_i)[1].tofile(f_path)
                         sub_index += 1
                     index += 1
             else:
