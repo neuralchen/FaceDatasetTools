@@ -28,7 +28,7 @@ Face = collections.namedtuple('Face', [
 Face.__new__.__defaults__ = (None, ) * len(Face._fields)
 
 
-class Face_detect:
+class Face_detect_crop:
     def __init__(self, name, root='~/.insightface_func/models'):
         self.models = {}
         root = os.path.expanduser(root)
