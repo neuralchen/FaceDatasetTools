@@ -151,6 +151,7 @@
 相关训练教程请参考[SimSwap教程主页](https://github.com/neuralchen/SimSwap)
 
 其训练平台有两种：Colab [ <a href="https://colab.research.google.com/github/neuralchen/SimSwap/blob/main/train.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="google colab logo"></a>](https://colab.research.google.com/github/neuralchen/SimSwap/blob/main/train.ipynb)与在本地服务器上训练。Colab是一种开源免费的平台，它能免费获取一般性能的GPU，缺点是每次推出后其相关的节点资源将全部释放，当使用者较多时往往无法获取到可用的计算资源，因此推荐条件特别艰苦，完全无法获得可用的GPU计算资源的同学使用，不建议有可用的计算资源同学使用。本地运行的难点是配置环境，强烈建议同学们使用[Miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html)。
+注意本部分完成后需要撰写相关报告，具体要求参考[课程PPT (3.7M)](https://pan.baidu.com/s/1m56mcD_e7_kJvKUZQ45pCQ?pwd=sjtu)。
 
 ### 训练数据集
 考虑到数据质量及规模问题，本次课程加入VGGFace2数据集作为训练的基础数据，额外加入本次由同学们共同采集的数据作为补充数据。
