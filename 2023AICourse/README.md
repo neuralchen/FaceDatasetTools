@@ -167,6 +167,11 @@ VGGFace下载链接：
 两个数据下载后将他们合并，也即将VGGFace2目录下的所有子文件夹与课程采集数据目录下的所有子文件夹合并在同一个目录下，将合并后的数据集作为训练数据集。
 
 
+### 测试数据
+
+待公布
+
+### 相关信息
 
 任何问题请邮件：[xuanhong chen](mailto:chenxuanhongzju@outlook.com)
 
