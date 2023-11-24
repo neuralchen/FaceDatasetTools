@@ -25,6 +25,7 @@ import tkinter.ttk as ttk
 import numpy as np
 from   PIL import Image
 
+from video_tools.json_config import writeConfig, readConfig
 from insightface_func.utils.face_align_ffhqandnewarc import ffhq_template
 from insightface_func.face_detect_crop_multi_highresolution import Face_detect_crop
 
@@ -299,21 +300,37 @@ class Application(tk.Frame):
                         det_size=(640,640),mode = mode,crop_size=crop_size,ratio=min_scale)
         log_file = "./dataset_readme.txt"
         with open(log_file,'a+') as logf: # ,encoding='UTF-8'
-                    logf.writelines("%s --> %s\n"%(path,tg_path))
+            logf.writelines("%s --> %s\n"%(path,tg_path))
+        
+        
+        
         if path and tg_path:
+            checkpoint = "ckpt.json"
+            checkpoint = os.path.join(path, checkpoint)
+            print(checkpoint)
+            ckpt_json  = {
+                "image_name":""
+            }
+            if os.path.exists(checkpoint):
+                ckpt_json = readConfig(checkpoint)
+            else:
+                writeConfig(checkpoint, ckpt_json)
             imgs_list = []
             if os.path.isdir(path):
                 print("Input a dir....")
-                for item in glob.iglob(os.path.join(path,"*.jpg"),recursive=True):
+                for item in glob.iglob(os.path.join(path,"*.jpg"), recursive=False):
                     imgs_list.append(item)
-                for item in glob.iglob(os.path.join(path,"*.JPG"),recursive=True):
+                for item in glob.iglob(os.path.join(path,"*.JPG"), recursive=False):
                     imgs_list.append(item)
-                for item in glob.iglob(os.path.join(path,"*.PNG"),recursive=True):
+                for item in glob.iglob(os.path.join(path,"*.png"), recursive=False):
                     imgs_list.append(item)
-                for item in glob.iglob(os.path.join(path,"*.png"),recursive=True):
+                for item in glob.iglob(os.path.join(path,"*.PNG"), recursive=False):
                     imgs_list.append(item)
                 index = 0
-                for img in imgs_list:
+                if ckpt_json["image_name"] != "":
+                    index = imgs_list.index(ckpt_json["image_name"])
+                    print("Start from %d-th image: %s"%(index, ckpt_json["image_name"]))
+                for img in imgs_list[index:]:
                     print(img)
                     try:
                         attr_img_ori = cv2.imdecode(np.fromfile(img, dtype=np.uint8),cv2.IMREAD_COLOR)
@@ -326,7 +343,7 @@ class Application(tk.Frame):
                     with open(log_name,'a+') as logf:
                         logf.writelines("Image Name: %s:\n"%(img))
                         if attr_img_align_crop is None:
-                            logf.writelines("Detect no face!\n\n"%(img))
+                            logf.writelines("Detect no face in image %s!\n\n"%(img))
                             continue
                         sub_index = 0
                         attr_img_align_crop = attr_img_align_crop[0]
@@ -359,6 +376,8 @@ class Application(tk.Frame):
                             sub_index += 1
                         logf.writelines("\n")
                     index += 1
+                    ckpt_json["image_name"] = img
+                    writeConfig(checkpoint, ckpt_json)
             else:
                 print("Input an image....")
                 imgs_list.append(path)
