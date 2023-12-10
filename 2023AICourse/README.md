@@ -162,7 +162,7 @@ VGGFace下载链接：
 
 课程采集数据部分下载链接：
 
-[[百度网盘] SJTU_Swap_224.zip (696M)](https://pan.baidu.com/s/1UU1UZKqDQnOBmd03wfzEsw?pwd=sjtu)
+[[百度网盘] SJTU_Swap_224.zip (696M)](https://pan.baidu.com/s/1vK-cSTOdaX-UGzKCgJH5SA?pwd=sjtu)
 
 两个数据下载后将他们合并，也即将VGGFace2目录下的所有子文件夹与课程采集数据目录下的所有子文件夹合并在同一个目录下，将合并后的数据集作为训练数据集。
 
