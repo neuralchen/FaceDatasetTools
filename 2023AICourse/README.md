@@ -178,7 +178,7 @@ VGGFace下载链接：
 然后，将```source_[num]```与```target_[num]```交换，以```target_[num]```来替换```source_[num]```，并计算替换后的结果图片与```target_[num]```的ArcFace特征的余弦距离
 最后，计算上述两种情况中所有图片的平均余弦距离。注意距离计算不需要将结果图像拼接回原图像。
 
-### ArcFace余弦距离计算伪代码：
+### ArcFace余弦距离计算*伪代码*：
 
 ```
 import torch
