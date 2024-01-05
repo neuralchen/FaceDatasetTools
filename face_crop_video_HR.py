@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 #############################################################
-# File: face_crop.py
+# File: face_crop_video.py
 # Created Date: Tuesday February 1st 2022
 # Author: Chen Xuanhong
 # Email: chenxuanhongzju@outlook.com
@@ -11,22 +11,18 @@
 #############################################################
 
 
-import os
-import cv2
-import sys
-import glob
-import datetime
-import tkinter
-from tkinter.filedialog import askdirectory
+import  os
+import  cv2
+import  sys
+import  numpy as np
+from    tqdm import tqdm
+import  tkinter
+from    tkinter.filedialog import askopenfilename, askdirectory
 
 import threading
 import tkinter as tk
 import tkinter.ttk as ttk
-from   tqdm import tqdm
-import numpy as np
-from   PIL import Image
 
-from video_tools.json_config import writeConfig, readConfig
 from insightface_func.utils.face_align_ffhqandnewarc import ffhq_template
 from insightface_func.face_detect_crop_multi_highresolution import Face_detect_crop
 
@@ -48,8 +44,6 @@ class TextRedirector(object):
 # Main Class
 #############################################################
 
-LOG_DIR = "./logs"
-TimeStrFormat  = '%Y%m%d%H%M%S'
 class Application(tk.Frame):
 
 
@@ -66,7 +60,7 @@ class Application(tk.Frame):
 
     def window_init(self):
         cwd = os.getcwd()
-        self.master.title('Face Crop - %s'%cwd)
+        self.master.title('Face Crop Tool for Video - %s'%cwd)
         # self.master.iconbitmap('./utilities/_logo.ico')
         self.master.geometry("{}x{}".format(640, 600))
 
@@ -81,14 +75,14 @@ class Application(tk.Frame):
 
         self.img_path = tkinter.StringVar()
 
-        tk.Label(list_frame, text="Image/Video Path:",font=font_list,justify="left")\
+        tk.Label(list_frame, text="Video Path:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
         
         tk.Entry(list_frame, textvariable= self.img_path, font=font_list)\
                     .grid(row=0,column=1,sticky=tk.EW)
         
 
-        tk.Button(list_frame, text = "Select Path", font=font_list,
+        tk.Button(list_frame, text = "Select", font=font_list,
                     command = self.Select, bg='#F4A460', fg='#F5F5F5')\
                     .grid(row=0,column=2,sticky=tk.EW)
         #################################################################################################
@@ -107,7 +101,7 @@ class Application(tk.Frame):
                     .grid(row=0,column=1,sticky=tk.EW)
         
 
-        tk.Button(list_frame1, text = "Select Path", font=font_list,
+        tk.Button(list_frame1, text = "Select", font=font_list,
                     command = self.Select_Target, bg='#F4A460', fg='#F5F5F5')\
                     .grid(row=0,column=2,sticky=tk.EW)
         
@@ -118,6 +112,7 @@ class Application(tk.Frame):
         label_frame.columnconfigure(1, weight=1)
         label_frame.columnconfigure(2, weight=1)
         label_frame.columnconfigure(3, weight=1)
+        label_frame.columnconfigure(4, weight=1)
 
         tk.Label(label_frame, text="Crop Size:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
@@ -131,12 +126,19 @@ class Application(tk.Frame):
         tk.Label(label_frame, text="Blurry Thredhold:",font=font_list,justify="left")\
                     .grid(row=0,column=3,sticky=tk.EW)
         
+
+        tk.Label(label_frame, text="Frame Interval:",font=font_list,justify="left")\
+                    .grid(row=0,column=4,sticky=tk.EW)
+        
         #################################################################################################
+
         test_frame    = tk.Frame(self.master)
         test_frame.pack(fill="both", padx=5,pady=5)
         test_frame.columnconfigure(0, weight=1)
         test_frame.columnconfigure(1, weight=1)
         test_frame.columnconfigure(2, weight=1)
+        test_frame.columnconfigure(3, weight=1)
+        test_frame.columnconfigure(4, weight=1)
 
         self.test_var = tkinter.StringVar()
 
@@ -161,60 +163,51 @@ class Application(tk.Frame):
         self.thredhold = tkinter.StringVar()
         tk.Entry(test_frame, textvariable= self.thredhold, font=font_list)\
                     .grid(row=0,column=3,sticky=tk.EW)
-        self.thredhold.set("10")
+        self.thredhold.set("150")
+
+        self.frame_interv = tkinter.StringVar()
+        tk.Entry(test_frame, textvariable= self.frame_interv, font=font_list)\
+                    .grid(row=0,column=4,sticky=tk.EW)
+        self.frame_interv.set("10")
         #################################################################################################
         scale_frame    = tk.Frame(self.master)
         scale_frame.pack(fill="both", padx=5,pady=5)
-        scale_frame.columnconfigure(0, weight=2)
-        label_frame.columnconfigure(1, weight=1)
+        scale_frame.columnconfigure(0, weight=1)
+        scale_frame.columnconfigure(1, weight=1)
+        scale_frame.columnconfigure(2, weight=1)
+        scale_frame.columnconfigure(3, weight=1)
+        # label_frame.columnconfigure(2, weight=1)
 
         tk.Label(scale_frame, text="Min Size:",font=font_list,justify="left")\
                     .grid(row=0,column=0,sticky=tk.EW)
         self.min_scale = tkinter.StringVar()
-        tk.Scale(scale_frame, from_=0.1, to=2.0, length=500, orient=tk.HORIZONTAL, variable= self.min_scale,\
-                    font=font_list, resolution=0.1).grid(row=0,column=1,sticky=tk.EW)
-        self.min_scale.set(0.8)
-        #################################################################################################
-        name_frame    = tk.Frame(self.master)
-        name_frame.pack(fill="both", padx=5,pady=5)
-        name_frame.columnconfigure(0, weight=1)
-        name_frame.columnconfigure(1, weight=2)
-        name_frame.columnconfigure(2, weight=1)
-        name_frame.columnconfigure(3, weight=2)
-        name_frame.columnconfigure(4, weight=1)
 
-        self.name_mode_var = tkinter.StringVar(value="0")
+        self.image_scale = ttk.Combobox(scale_frame, textvariable=self.min_scale)
+        self.image_scale.grid(row=0,column=1,sticky=tk.EW)
+        self.image_scale["value"] = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0]
+        self.image_scale.current(2)
 
-        self.name_mode = tk.Checkbutton(name_frame, text="Name Preserve", variable=self.name_mode_var, 
-                        onvalue=True, offvalue=False)
-        self.name_mode.grid(row=0,column=0,sticky=tk.EW)
-
-        tk.Label(name_frame, text="Affine Size:",font=font_list,justify="left")\
-                    .grid(row=0,column=1,sticky=tk.EW)
+        tk.Label(scale_frame, text="Affine Size:",font=font_list,justify="left")\
+                    .grid(row=0,column=2,sticky=tk.EW)
         self.affine_size_var = tkinter.StringVar()
 
-        self.affine_size = ttk.Combobox(name_frame, textvariable=self.affine_size_var)
-        self.affine_size.grid(row=0,column=2,sticky=tk.EW)
+        self.affine_size = ttk.Combobox(scale_frame, textvariable=self.affine_size_var)
+        self.affine_size.grid(row=0,column=3,sticky=tk.EW)
         self.affine_size["value"] = [1,4,8,10,16,20,24,32]
-        self.affine_size.current(4)
+        self.affine_size.current(1)
 
-        tk.Label(name_frame, text="DPI:",font=font_list,justify="left")\
-                    .grid(row=0,column=3,sticky=tk.EW)
-        self.dpi_var = tkinter.StringVar()
-
-        self.dpi = ttk.Combobox(name_frame, textvariable=self.dpi_var)
-        self.dpi.grid(row=0,column=4,sticky=tk.EW)
-        self.dpi["value"] = [96, 100, 200, 300]
-        self.dpi.current(3)
         #################################################################################################
         test_frame1    = tk.Frame(self.master)
         test_frame1.pack(fill="both", padx=5,pady=5)
         test_frame1.columnconfigure(0, weight=1)
+        # test_frame1.columnconfigure(1, weight=1)
 
         test_update_button = tk.Button(test_frame1, text = "Crop",
                             font=font_list, command = self.Crop, bg='#F4A460', fg='#F5F5F5')
         test_update_button.grid(row=0,column=0,sticky=tk.EW)
+
         #################################################################################################
+        
 
         text = tk.Text(self.master, wrap="word")
         text.pack(fill="both",expand="yes", padx=5,pady=5)
@@ -227,16 +220,18 @@ class Application(tk.Frame):
 
     def init_algorithm(self):
         self.detect = Face_detect_crop(name='antelope', root='./insightface_func/models')
-
+        
+    
+    # def __scaning_logs__(self):
     def Select(self):
         thread_update = threading.Thread(target=self.select_task)
         thread_update.start()
     
     def select_task(self):
-        path = askdirectory()
+        path = askopenfilename()
         
-        if os.path.isdir(path):
-            print("Selected source directory: %s"%path)
+        if os.path.isfile(path):
+            print("Selected source video: %s"%path)
             self.img_path.set(path)
     
     def Select_Target(self):
@@ -262,34 +257,14 @@ class Application(tk.Frame):
         path        = self.img_path.get()
         tg_path     = self.save_path.get()
         blur_t      = self.thredhold.get()
-        name_mode   = self.name_mode_var.get()
-        
+        frame_interv= self.frame_interv.get()
+        frame_interv= int(frame_interv)
         affine_size = self.affine_size_var.get()
         affine_size = crop_size * int(affine_size)
-        dpi         = int(self.dpi_var.get())
 
-        ffhq_landmark= ffhq_template * crop_size / 512
-        ffhq_landmark= ffhq_landmark.astype(np.int16)
-        blur_win    = int(0.1 * crop_size)//2
-        ffhq_landmark_top = list(ffhq_landmark - blur_win)
-        ffhq_landmark_bottome = list(ffhq_landmark + blur_win)
+        basepath    = os.path.splitext(os.path.basename(path))[0]
+        tg_path     = os.path.join(tg_path,basepath)
 
-        os.makedirs(LOG_DIR,exist_ok=True)
-        timeStr     = datetime.datetime.strftime(datetime.datetime.now(), TimeStrFormat)
-        log_name    = "log_%s.log"%timeStr
-        log_name    = os.path.join(LOG_DIR, log_name)
-        with open(log_name,'a+') as logf:
-            logf.writelines("Source path: %s --> Target path: %s \n"%(path, tg_path))
-            logf.writelines("Image Crop Size: %d \n"%(crop_size))
-            logf.writelines("Image Crop Mode: %s \n"%(mode))
-            logf.writelines("Image Blurry Thredhold: %s \n"%(blur_t))
-            logf.writelines("Image Affinement Transformer Size: %d \n"%(affine_size))
-            logf.writelines("Window Size to Caculate Blerry Degree: %d \n\n"%(blur_win))
-
-
-        if not tg_path:
-            basepath    = os.path.splitext(os.path.basename(path))[0]
-            tg_path     = os.path.join("H:/face_data/VGGFace2_HQ",basepath)
         print("target path: ",tg_path)
         if not os.path.exists(tg_path):
             os.makedirs(tg_path)
@@ -302,89 +277,39 @@ class Application(tk.Frame):
         log_file = "./dataset_readme.txt"
         with open(log_file,'a+') as logf: # ,encoding='UTF-8'
             logf.writelines("%s --> %s\n"%(path,tg_path))
-        
-        
-        
         if path and tg_path:
-            checkpoint = "ckpt.json"
-            checkpoint = os.path.join(path, checkpoint)
-            print(checkpoint)
-            ckpt_json  = {
-                "image_name":""
-            }
-            if os.path.exists(checkpoint):
-                ckpt_json = readConfig(checkpoint)
+
+            if os.path.isfile(path):
+                print("Input a file....")
+
+                video = cv2.VideoCapture(path)
+        
+                frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+
+                for frame_index in tqdm(range(frame_count)):
+                    ret, frame = video.read()
+                    if frame_index % frame_interv ==0:
+                        
+                        if  ret:
+                            detect_results = self.detect.get(frame, crop_size)
+                            if detect_results is not None:
+                                for index, face_i in enumerate(detect_results[0]):
+                                    i_box = detect_results[2][index]
+                                    print(i_box)
+                                    imageVar = cv2.Laplacian(frame[i_box[1]:i_box[3],i_box[0]:i_box[2],:], cv2.CV_64F).var()
+                                    cv2.imencode('.png',frame[i_box[1]:i_box[3],i_box[0]:i_box[2],:])[1].tofile("wocao.png")
+                                    # print("save path: ",f_path)
+                                    if imageVar < blur_t:
+                                        print("Image var=%.3f. Over blurry image!"%imageVar)
+                                        continue
+                                    f_path =os.path.join(tg_path, str(frame_index).zfill(6)+"_%d.%s"%(index,tg_format))
+                                    cv2.imencode('.png',face_i)[1].tofile(f_path)
+                            # else:
+                            #     print("No face detected!")
+
             else:
-                writeConfig(checkpoint, ckpt_json)
-            imgs_list = []
-            if os.path.isdir(path):
                 print("Input a dir....")
-                for item in glob.iglob(os.path.join(path,"*.jpg"), recursive=False):
-                    imgs_list.append(item)
-                # for item in glob.iglob(os.path.join(path,"*.JPG"), recursive=False):
-                #     imgs_list.append(item)
-                for item in glob.iglob(os.path.join(path,"*.png"), recursive=False):
-                    imgs_list.append(item)
-                # for item in glob.iglob(os.path.join(path,"*.PNG"), recursive=False):
-                #     imgs_list.append(item)
-                index = 0
-                if ckpt_json["image_name"] != "":
-                    index = imgs_list.index(ckpt_json["image_name"])
-                    print("Start from %d-th image: %s"%(index, ckpt_json["image_name"]))
-                with open(log_name,'a+') as logf: # ,encoding='UTF-8'
-                    logf.writelines("Total image number: %d\n\n"%(len(imgs_list[index:])))
-                    print("Total image number: %d\n"%(len(imgs_list[index:])))
-                for img in tqdm(imgs_list[index:]):
-                    print(img)
-                    try:
-                        attr_img_ori = cv2.imdecode(np.fromfile(img, dtype=np.uint8),cv2.IMREAD_COLOR)
-                        if name_mode:
-                            save_name = os.path.splitext(os.path.basename(img))[0]
-                    except:
-                        print("Illegal file!")
-                        continue
-                    attr_img_align_crop = self.detect.get(attr_img_ori,transformer_size=affine_size)
-                    with open(log_name,'a+') as logf:
-                        logf.writelines("Image Name: %s:\n"%(img))
-                        if attr_img_align_crop is None:
-                            logf.writelines("Detect no face in image %s!\n\n"%(img))
-                            continue
-                        sub_index = 0
-                        attr_img_align_crop = attr_img_align_crop[0]
-                        for face_i in attr_img_align_crop:
-                            imageVar = 0
-                            str_temp = ""
-                            logf.writelines(" %d-th face "%sub_index)
-                            for i_kps in range(5):
-                                win = face_i[ffhq_landmark_top[i_kps][0]:ffhq_landmark_bottome[i_kps][0],
-                                            ffhq_landmark_top[i_kps][1]:ffhq_landmark_bottome[i_kps][1],:]
-                                temp = cv2.Laplacian(win, cv2.CV_64F).var()
-                                str_temp += " region %d: var = %.1f "%(i_kps, temp)
-                                imageVar += temp
-                            imageVar /= 5
-                            logf.writelines(str_temp+"\n")
-                            
-                            if imageVar < blur_t:
-                                # print("Var=%.1f. Over blurry image!"%imageVar)
-                                logf.writelines("Var=%.1f Over blurry image!\n"%imageVar)
-                                sub_index += 1
-                                continue
-                            logf.writelines("Average Var=%.1f\n"%(imageVar))
-                            if name_mode=="1":
-                                f_path =os.path.join(tg_path, save_name+"_%d.%s"%(sub_index,tg_format))
-                            else:
-                                f_path =os.path.join(tg_path, str(index).zfill(6)+"_%d.%s"%(sub_index,tg_format))
-                            # face_i   = Image.fromarray(cv2.cvtColor(face_i,cv2.COLOR_BGR2RGB))
-                            # face_i.save(f_path, quality=100, compress_level=0, dpi=(dpi, dpi))
-                            cv2.imencode('.png',face_i)[1].tofile(f_path)
-                            sub_index += 1
-                        logf.writelines("\n")
-                    index += 1
-                    ckpt_json["image_name"] = img
-                    writeConfig(checkpoint, ckpt_json)
-            else:
-                print("Input an image....")
-                imgs_list.append(path)
+                
             print("Process finished!")
         else:
             print("Pathes are invalid!")
