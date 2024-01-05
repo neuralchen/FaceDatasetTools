@@ -178,7 +178,33 @@ VGGFace下载链接：
 然后，将```source_[num]```与```target_[num]```交换，以```target_[num]```来替换```source_[num]```，并计算替换后的结果图片与```target_[num]```的ArcFace特征的余弦距离
 最后，计算上述两种情况中所有图片的平均余弦距离。注意距离计算不需要将结果图像拼接回原图像。
 
-***测试脚本需要同学们参考simswap来完成！***
+### ArcFace余弦距离计算伪代码：
+
+```
+import torch
+import torch.nn.functional as F
+
+imagenet_std = torch.tensor([0.229, 0.224, 0.225]).view(3,1,1)
+imagenet_mean= torch.tensor([0.485, 0.456, 0.406]).view(3,1,1)
+
+ArcFace    = torch.load(path_to_arcface_ckpt, map_location=torch.device("cpu"))
+ArcFace.eval()
+ArcFace.requires_grad_(False)
+
+source_img   = (source_img - imagenet_mean)/imagenet_std                 # source_img~[0,1]
+source_img   = F.interpolate(source_img, size=(112,112), mode='bicubic')
+source_id    = ArcFace(source_img)                                       # ArcFace model
+source_id    = F.normalize(source_id, p=2, dim=1)
+
+result_img   = (result_img - imagenet_mean)/imagenet_std                 # result_img~[0,1]
+result_img   = F.interpolate(result_img, size=(112,112), mode='bicubic')
+result_id    = ArcFace(result_img)
+result_id    = F.normalize(result_id, p=2, dim=1)
+
+cos_dis      = 1 -  cos_loss(source_id, result_id)                       # cosine distance between source image and result image
+```
+
+***测试脚本需要同学们参考上述伪代码及simswap项目来完成！***
 
 ***不同小组请勿共享生成结果，最终评分过程将会检测文件来源。请勿提交simswap开源模型结果。这些行为将会被视作作弊。***
 
