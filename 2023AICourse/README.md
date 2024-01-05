@@ -184,6 +184,8 @@ VGGFace下载链接：
 import torch
 import torch.nn.functional as F
 
+cos_loss    = torch.nn.CosineSimilarity()
+
 imagenet_std = torch.tensor([0.229, 0.224, 0.225]).view(3,1,1)
 imagenet_mean= torch.tensor([0.485, 0.456, 0.406]).view(3,1,1)
 
