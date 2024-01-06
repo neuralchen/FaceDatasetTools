@@ -171,7 +171,7 @@ VGGFace下载链接：
 
 测试数据包括非对齐人脸图片共计40张，人脸图片需做人脸对齐。
 
-[[图像测试数据.zip(6.7M)]](https://jbox.sjtu.edu.cn/l/o16DNw)
+[[图像测试数据.zip(6.7M)]](https://jbox.sjtu.edu.cn/l/y1TyUv)
 
 #### 图片测试方式：
 将图像测试数据集中的图片```source_[num]```来替换图片```target_[num]```，实例：用```source_01```替换```target_01```，计算替换后的结果图片与```source_[num]```的ArcFace特征的余弦距离。
